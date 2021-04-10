@@ -1,10 +1,11 @@
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Category {
-  final int id;
+  final String id;
   final String title;
-  final String description;
-  final DateTime addTime;
+  final String addTime;
   final Color color;
 
   Category({
@@ -12,7 +13,7 @@ class Category {
     @required this.title,
     @required this.addTime,
     @required this.color,
-    this.description,
+
   });
 }
 class Categories with ChangeNotifier {
@@ -21,16 +22,15 @@ class Categories with ChangeNotifier {
 
   void add({String title, String description,Color color,}) {
     categoriesList.add(Category(
-        id: 1,
+        id:'${DateTime.now().hashCode}',
         title: title,
-        description: description,
-        addTime: DateTime.now(),
+        addTime:"${DateFormat.yMMMMd().format(DateTime.now())}\n ${DateFormat.E().add_jm().format(DateTime.now())}" ,
         color:color ,));
     notifyListeners();
   }
 
-  void delete(String description) {
-    categoriesList.removeWhere((element) => element.description == description);
+  void delete(String id) {
+    categoriesList.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 

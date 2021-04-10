@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/notes.dart';
 
-
-
 class NoteDetails extends StatelessWidget {
   final String id;
 
@@ -17,29 +15,31 @@ class NoteDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Note> prodList = Provider.of<Notes>(context, listen: true).notesList;
 
-    var filteredItem = prodList.firstWhere((element) => element.id == id, orElse: () => null);
+    var filteredItem =
+        prodList.firstWhere((element) => element.id == id, orElse: () => null);
 
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.amber,
-          title: filteredItem == null ? null : Text(filteredItem.title)),
+      appBar:
+          AppBar(title: filteredItem == null ? null : Text(filteredItem.title)),
       body: filteredItem == null
           ? null
           : ListView(
-        children: [
-          SizedBox(height: 10),
-          buildContainer(filteredItem.image, filteredItem.id),
-          SizedBox(height: 10),
-          buildCard(filteredItem.title, filteredItem.description,
-              filteredItem.addTime),
-        ],
-      ),
+              children: [
+                SizedBox(height: 10),
+                buildContainer(filteredItem.imagesFiles.isEmpty?null:filteredItem.imagesFiles[0], filteredItem.id),
+                SizedBox(height: 10),
+                buildCard(filteredItem.title, filteredItem.description,
+                    filteredItem.addTime, context),
+              ],
+            ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.amber,
+        backgroundColor: Theme.of(context).primaryColor,
         onPressed: () {
           Navigator.pop(context, filteredItem.id);
         },
-        child: Icon(Icons.delete, color: Colors.black),
+        child: Icon(
+          Icons.delete,
+        ),
       ),
     );
   }
@@ -50,15 +50,17 @@ class NoteDetails extends StatelessWidget {
       child: Center(
         child: Hero(
           tag: id,
-          child: Image.file(image),
+          child:image==null?Image.asset("assets/noteOpen.png"): Image.file(image),
         ),
       ),
     );
   }
 
-  Card buildCard(String title, String desc,String addTime) {
+  Card buildCard(
+      String title, String desc, String addTime, BuildContext context) {
     return Card(
       elevation: 10,
+      color: Color.fromRGBO(154, 125, 117, 1),
       margin: EdgeInsets.all(7),
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -67,16 +69,19 @@ class NoteDetails extends StatelessWidget {
           children: <Widget>[
             Text(
               title,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.subtitle1,
             ),
-            Divider(color: Colors.black),
-            Text(desc,
-                style: TextStyle(fontSize: 16), textAlign: TextAlign.justify),
-            Divider(color: Colors.black),
-            Text(
-              "${addTime.hashCode}",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Divider(
+              color: Colors.white,
+              thickness: 2,
             ),
+            Text(desc??'', style: Theme.of(context).textTheme.bodyText1),
+            Divider(
+              color: Colors.white,
+              thickness: 2,
+            ),
+            Text(addTime,
+                style: Theme.of(context).textTheme.bodyText1),
           ],
         ),
       ),

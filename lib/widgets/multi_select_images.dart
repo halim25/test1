@@ -1,25 +1,22 @@
 import 'dart:io';
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-
 import 'package:multi_image_picker/multi_image_picker.dart';
-//
 
-class MultiSelectImagesCard extends StatefulWidget {
+
+class MultiSelectImages extends StatefulWidget {
   final Function function;
 
-  const MultiSelectImagesCard({Key key, this.function}) : super(key: key);
+  const MultiSelectImages({Key key, this.function}) : super(key: key);
 
   @override
-  _MultiSelectImagesCardState createState() => _MultiSelectImagesCardState();
+  _MultiSelectImagesState createState() => _MultiSelectImagesState();
 }
 
-class _MultiSelectImagesCardState extends State<MultiSelectImagesCard> {
+class _MultiSelectImagesState extends State<MultiSelectImages> {
   List<Asset> images = <Asset>[];
-
 
   @override
   void initState() {
@@ -27,19 +24,12 @@ class _MultiSelectImagesCardState extends State<MultiSelectImagesCard> {
   }
 
   List<File> imagesFiles = [];
-  List<File> imagesFilesCamera=[];
 
   Future<void> getFileList() async {
     imagesFiles.clear();
-    if(imagesFilesCamera.isNotEmpty){
-      for (int i = 0; i < imagesFilesCamera.length; i++){
-        imagesFiles.add(imagesFilesCamera[i]);
-      }
-
-    }
     for (int i = 0; i < images.length; i++) {
       var filePath =
-          await FlutterAbsolutePath.getAbsolutePath(images[i].identifier);
+      await FlutterAbsolutePath.getAbsolutePath(images[i].identifier);
 
       imagesFiles.add(
         File(filePath),
@@ -51,8 +41,9 @@ class _MultiSelectImagesCardState extends State<MultiSelectImagesCard> {
 
   void removeImage(int index) {
     imagesFiles.removeAt(index);
-    if(images.isNotEmpty){
-       images.removeAt(index);}
+    if (images.isNotEmpty) {
+      images.removeAt(index);
+    }
     setState(() {});
   }
 
@@ -74,39 +65,22 @@ class _MultiSelectImagesCardState extends State<MultiSelectImagesCard> {
     );
   }
 
-  Future<void> loadAssets(String src) async {
-
+  Future<void> loadAssets() async {
     List<Asset> resultList = <Asset>[];
     try {
-      if (src == "Gallery") {
-        resultList = await MultiImagePicker.pickImages(
-          maxImages: 20- images.length,
-          enableCamera: true,
-          selectedAssets: images,
-          cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
-          materialOptions: MaterialOptions(
-            actionBarColor: "#abcdef",
-            actionBarTitle: "Pick images",
-            allViewTitle: "All Photos",
-            useDetailsView: false,
-            selectCircleStrokeColor: "#000000",
-          ),
-        );
-      }else{
-        final pickedFile = await ImagePicker().getImage(source: ImageSource.camera);
-        if (pickedFile != null) {
-          imagesFilesCamera.add(
-            File(pickedFile.path),
-          );
-          for (int i = 0; i < imagesFilesCamera.length; i++){
-            imagesFiles.add(imagesFilesCamera[i]);
-          }
-          setState(() {});
-          print('Image selected from camera.:${imagesFilesCamera.length}');
-        } else {
-          print('No image selected.');
-        }
-      }
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 20 - images.length,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Pick images",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
     } on Exception catch (e) {
       //
     }
@@ -146,78 +120,15 @@ class _MultiSelectImagesCardState extends State<MultiSelectImagesCard> {
                 "Choose Image",
                 style: Theme.of(context).textTheme.subtitle2,
               ),
-              onPressed: () => buildShowDialog(context),
+              onPressed: () async {
+                await loadAssets();
+              },
             ),
           ),
-
           imagesFiles.length == 0 ? Container() : buildListView(),
         ],
       ),
     );
-  }
-
-  buildShowDialog(BuildContext ctx) {
-    var ad = AlertDialog(
-      title: Text("Choose Picture from:"),
-      content: Container(
-        height: 150,
-        child: Column(
-          children: [
-            Divider(color: Colors.black),
-            RaisedButton.icon(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              color: Colors.red,
-              onPressed: () async {
-                Navigator.of(ctx).pop();
-                await loadAssets("Camera");
-
-              },
-              label: Text(
-                "Camera",
-                textScaleFactor: 1,
-                style: GoogleFonts.cairo(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              icon: Icon(
-                Icons.add_a_photo_outlined,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-            SizedBox(height: 10),
-            RaisedButton.icon(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              color: Colors.red,
-              onPressed: () async {
-                Navigator.of(ctx).pop();
-                await loadAssets("Gallery");
-
-              },
-              label: Text(
-                "Gallery",
-                textScaleFactor: 1,
-                style: GoogleFonts.cairo(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              icon: Icon(
-                Icons.image_outlined,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-    showDialog(builder: (ctx) => ad, context: ctx);
   }
 }
 

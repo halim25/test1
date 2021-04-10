@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'providers/note_category.dart';
 import 'providers/notes.dart';
 import 'products.dart';
 import 'package:provider/provider.dart';
+
 import 'add_products.dart';
+import 'screens/categories_screen.dart';
 import 'screens/notes_screen.dart';
 
-
 void main() {
-  runApp(
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider<Categories>(
+      create: (_) => Categories(),
+    ),
     ChangeNotifierProvider<Notes>(
       create: (_) => Notes(),
-      child:MyApp(),
     ),
-  );
+  ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,9 +29,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-          primaryColor: Color.fromRGBO(205, 91 , 102,1),
-         canvasColor: Color.fromRGBO(231, 231 , 231, 1)
-         ),
+          primaryColor: Color.fromRGBO(205, 91, 102, 1),
+          canvasColor: Color.fromRGBO(231, 231, 231, 1),
+          textTheme: TextTheme(
+              bodyText1: GoogleFonts.caveat(
+                color: Color(0xffFEE2A3),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              bodyText2: GoogleFonts.lato(
+                color: Color(0xffFEE2A3),
+              ),
+              subtitle1: GoogleFonts.lemonada(
+                  color: Color.fromRGBO(63, 39, 87, 1),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+              subtitle2: GoogleFonts.habibi(
+                color:Color(0xff3F2757),
+                fontSize: 30,
+                fontWeight: FontWeight.bold
+              ))),
       debugShowCheckedModeBanner: false,
       home: NotesScreen(),
     );

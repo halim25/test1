@@ -10,7 +10,7 @@ class Note {
   final String description;
   final String category;
   final String addTime;
-  final File image;
+  final List<File> imagesFiles;
   final File record;
 
 
@@ -20,17 +20,19 @@ class Note {
     @required this.description,
     @required this.category,
     @required this.addTime,
-    @required this.image,
+    @required this.imagesFiles,
     @required this.record,
   });
 }
 
 class Notes with ChangeNotifier {
   List<Note> notesList = [];
-  File image;
+  File image ;
   File record;
 
-  void add({String title, String description,String category,}) {
+
+
+  void add({String title, String description,String category,List<File> imagesFiles}) {
     notesList.add(Note(
         id: '${DateTime.now().hashCode}',
         title: title,
@@ -38,12 +40,12 @@ class Notes with ChangeNotifier {
         category: category,
         addTime:"${DateFormat.yMMMMd().format(DateTime.now())}\n ${DateFormat.E().add_jm().format(DateTime.now())}" ,
         record: record,
-        image: image));
+        imagesFiles: imagesFiles));
     notifyListeners();
   }
 
-  void delete(String description) {
-    notesList.removeWhere((element) => element.description == description);
+  void delete(String id) {
+    notesList.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 

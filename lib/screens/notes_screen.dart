@@ -10,26 +10,6 @@ class NotesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Note> noteList = Provider.of<Notes>(context, listen: true).notesList;
 
-    Widget buildText(title, desc, category) {
-      var description =
-          desc.length >= 15 ? desc.replaceRange(15, desc.length, '...') : desc;
-      return Positioned(
-        bottom: 10,
-        right: 10,
-        child: Container(
-          width: 180,
-          color: Colors.black54,
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-          child: Text(
-            "$title\n$description\n$category",
-            style: TextStyle(fontSize: 26, color: Colors.white),
-            softWrap: true,
-            overflow: TextOverflow.fade,
-            maxLines: 4,
-          ),
-        ),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -37,16 +17,22 @@ class NotesScreen extends StatelessWidget {
       ),
       body: noteList.isEmpty
           ? Center(
-              child: Text('No Notes Added.', style: TextStyle(fontSize: 22)))
-          : ListView(
+              child: Text('No Notes Added.', style: TextStyle(fontSize: 22, color: Colors.black)))
+          : GridView(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                maxCrossAxisExtent: 500,
+                childAspectRatio: 1.5,
+              ),
               children: noteList
                   .map(
                     (item) => Builder(
                         builder: (ctx) => DetailCard(
                               id: item.id,
-                              title: item.title,
-                              description: item.description,
-                              image: item.image,
+                              title: item.title??'',
+                              description: item.description??'',
+                              image: item.imagesFiles.isEmpty?null:item.imagesFiles[0],
                               addTime: item.addTime,
                             )),
                   )
